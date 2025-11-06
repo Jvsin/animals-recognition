@@ -1,0 +1,6 @@
+# Wymagane pakiety do pobrania i rozpakowania archiwów (zip, tar*, 7z)
+requests>=2.0.0
+tqdm>=4.0.0
+py7zr>=0.18.0
+beautifulsoup4>=4.11.0
+lxml>=4.9.0
