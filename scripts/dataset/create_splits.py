@@ -1,3 +1,4 @@
+# kod z deep learning fundamentals
 import os
 import csv
 import random
@@ -17,12 +18,10 @@ final_classes = {
     'Sheep': 7,
 }
 
-# Calculate dataset_root as absolute path from project root
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent.parent
 dataset_root = str(project_root / 'dataset')
 
-# Split ratios
 train_ratio = 0.7
 test_ratio = 0.3
 
@@ -52,7 +51,6 @@ def split_and_write_csvs(comb_root, out_root, classes, train_r):
                       "Skipping.")
                 continue
             
-            # Look for images in <cls>/train/images/ directory
             train_images_dir = join(cls_dir, 'train', 'images')
             images = []
             
@@ -60,7 +58,6 @@ def split_and_write_csvs(comb_root, out_root, classes, train_r):
                 for f in os.listdir(train_images_dir):
                     full_path = join(train_images_dir, f)
                     if os.path.isfile(full_path) and f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
-                        # Store relative path from dataset root
                         rel_path = os.path.relpath(full_path, comb_root)
                         images.append(rel_path)
             
@@ -68,16 +65,13 @@ def split_and_write_csvs(comb_root, out_root, classes, train_r):
                 print(f"Warning: No images found in {train_images_dir}. Skipping.")
                 continue
             
-            # Shuffle the images
             random.shuffle(images)
             n = len(images)
             
-            # Calculate split indices
             train_end = int(train_r * n)
             
             train_imgs = images[:train_end]
             test_imgs = images[train_end:]
-            # Write to CSVs
             splits_data = [('train', train_imgs), ('test', test_imgs)]
             for split, imgs in splits_data:
                 for img in imgs:
@@ -91,10 +85,8 @@ def split_and_write_csvs(comb_root, out_root, classes, train_r):
 
 
 if __name__ == "__main__":
-    # Create CSV files
     create_csv_files(dataset_root)
     
-    # Split and write
     split_and_write_csvs(dataset_root, dataset_root, final_classes,
                          train_ratio)
     
