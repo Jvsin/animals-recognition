@@ -1,0 +1,62 @@
+# Plik .gitignore dla projektu Python
+# Ignoruje tymczasowe pliki i katalogi generowane podczas pracy z Pythonem
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C-extensions
+*.so
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+wheels/
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+venv.bak/
+env.bak/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+
+# Type checkers / caches
+.mypy_cache/
+.dmypy.json
+
+# Jupyter
+.ipynb_checkpoints
+
+# IDE/editor
+.vscode/
+
+# OS temporary files
+*.swp
+*~
+.DS_Store
+
+# Logs and local settings
+*.log
+.local/
+
