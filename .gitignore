@@ -27,6 +27,7 @@ ENV/
 .venv/
 venv.bak/
 env.bak/
+.conda/
 
 # PyInstaller
 *.manifest
