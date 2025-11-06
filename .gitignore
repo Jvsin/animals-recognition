@@ -60,3 +60,23 @@ htmlcov/
 *.log
 .local/
 
+# Archiwa — ignoruj wszystkie popularne formaty archiwów (zip, tar, 7z, rar, itp.)
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.tar.bz2
+*.tbz2
+*.tar.xz
+*.txz
+*.7z
+*.rar
+*.gz
+*.bz2
+*.xz
+*.iso
+*.jar
+*.war
+*.ear
+
+/dataset/
