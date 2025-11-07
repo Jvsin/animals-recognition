@@ -1,0 +1,27 @@
+PRZETWARZANIE OBRAZÓW NA WEKTORY:
+
+# Przetwórz cały dataset i zapisz tylko features
+python scripts/hog/hog.py
+
+# Przetwórz dataset i zapisz również wizualizacje HOG
+python scripts/hog/hog.py --visualize
+
+# Przetestuj na ograniczonej liczbie zdjęć (np. 10)
+python scripts/hog/hog.py --visualize --limit 10
+
+
+
+
+WYŚWIETLANIE FEATURES (DO KONTROLI):
+
+# Podstawowe wyświetlanie (10 pierwszych wpisów)
+python scripts/hog/view_hog_features.py
+
+# Wyświetl więcej wpisów
+python scripts/hog/view_hog_features.py --limit 20
+
+# Pokaż też pierwsze 10 wartości z każdego wektora
+python scripts/hog/view_hog_features.py --show-vector
+
+# Wskaż inny plik NPZ
+python scripts/hog/view_hog_features.py --features-file "path/to/features.npz"
