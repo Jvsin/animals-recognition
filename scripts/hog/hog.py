@@ -11,6 +11,7 @@ from skimage import exposure
 import matplotlib.pyplot as plt
 from pathlib import Path
 import argparse
+from tqdm import tqdm
 
 
 class HOGTransformer:
@@ -19,7 +20,7 @@ class HOGTransformer:
     """
     
     def __init__(self, orientations=9, pixels_per_cell=(8, 8), 
-                 cells_per_block=(2, 2), visualize=True, multichannel=False):
+                 cells_per_block=(2, 2), visualize=True, multichannel=False, target_size=(256, 256)):
         """
         Initialize HOG transformer with parameters.
         
@@ -29,12 +30,14 @@ class HOGTransformer:
             cells_per_block: Number of cells in each block
             visualize: Whether to return visualization image
             multichannel: Whether to process color images
+            target_size: Target size (width, height) to resize all images
         """
         self.orientations = orientations
         self.pixels_per_cell = pixels_per_cell
         self.cells_per_block = cells_per_block
         self.visualize = visualize
         self.multichannel = multichannel
+        self.target_size = target_size
     
     def extract_hog_features(self, image):
         """
@@ -47,6 +50,9 @@ class HOGTransformer:
             features: HOG feature vector
             hog_image: HOG visualization image (if visualize=True)
         """
+        # Resize image to target size for consistent feature vector length
+        image = cv2.resize(image, self.target_size)
+        
         # Convert to grayscale if needed
         if len(image.shape) == 3 and not self.multichannel:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -114,17 +120,18 @@ class HOGTransformer:
         return features
     
     def process_dataset(self, dataset_dir, photos_output_dir=None, features_output_dir=None, 
-                       save_features=True, save_visualizations=False, limit=None):
+                       save_features=True, save_visualizations=False, limit=None, split='train'):
         """
         Process all images in a dataset directory structure.
         
         Args:
-            dataset_dir: Directory containing dataset with class folders
+            dataset_dir: Directory containing dataset folders (train, test, valid)
             photos_output_dir: Directory to save HOG visualization images
             features_output_dir: Directory to save feature vectors
             save_features: Whether to save feature vectors
             save_visualizations: Whether to save HOG visualizations
             limit: Maximum number of images to process (for testing)
+            split: Which split to process ('train', 'test', or 'valid')
             
         Returns:
             all_features: Dictionary mapping image paths to feature vectors
@@ -132,34 +139,32 @@ class HOGTransformer:
         dataset_path = Path(dataset_dir)
         all_features = {}
         
-        # Find all class directories
-        class_dirs = [d for d in dataset_path.iterdir() if d.is_dir()]
+        # Find all image files in the specified split folder
+        split_path = dataset_path / split
+        if not split_path.exists():
+            print(f"Error: Split folder '{split}' not found in {dataset_dir}")
+            return all_features
         
-        print(f"Found {len(class_dirs)} class directories")
-        
-        # Find all image files in train/images subdirectories
         image_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
         image_files = []
         
-        for class_dir in class_dirs:
-            images_path = class_dir / 'train' / 'images'
-            if images_path.exists():
-                for ext in image_extensions:
-                    image_files.extend(images_path.glob(f'*{ext}'))
-                    image_files.extend(images_path.glob(f'*{ext.upper()}'))
+        for ext in image_extensions:
+            image_files.extend(split_path.glob(f'*{ext}'))
+            image_files.extend(split_path.glob(f'*{ext.upper()}'))
         
-        print(f"Found {len(image_files)} images total")
+        print(f"Found {len(image_files)} images in '{split}' split")
         
         if limit:
             image_files = image_files[:limit]
             print(f"Processing only {limit} images (limit applied)")
         
-        # Process each image
-        for idx, image_path in enumerate(image_files, 1):
-            # Get class name from directory structure
-            class_name = image_path.parent.parent.parent.name
-            
-            print(f"Processing {idx}/{len(image_files)}: {class_name}/{image_path.name}")
+        # Process each image with progress bar
+        for image_path in tqdm(image_files, desc="Extracting HOG features", unit="img", 
+                               bar_format='{l_bar}{bar:30}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]'):
+            # Extract class name from filename (e.g., "cheetah10001500367_.jpg" -> "cheetah")
+            filename = image_path.stem
+            # Class name is everything before the first digit
+            class_name = ''.join(c for c in filename if not c.isdigit()).rstrip('_')
             
             # Set output directory for visualizations (by class)
             vis_output_dir = None
@@ -256,6 +261,20 @@ def main():
         default=[2, 2],
         help='Number of cells in each block (height width)'
     )
+    parser.add_argument(
+        '--split',
+        type=str,
+        default='train',
+        choices=['train', 'test', 'valid'],
+        help='Which dataset split to process (train, test, or valid)'
+    )
+    parser.add_argument(
+        '--target-size',
+        type=int,
+        nargs=2,
+        default=[256, 256],
+        help='Target size (width height) to resize all images'
+    )
     
     args = parser.parse_args()
     
@@ -265,7 +284,8 @@ def main():
         pixels_per_cell=tuple(args.pixels_per_cell),
         cells_per_block=tuple(args.cells_per_block),
         visualize=True,
-        multichannel=False
+        multichannel=False,
+        target_size=tuple(args.target_size)
     )
     
     # Process dataset
@@ -275,7 +295,8 @@ def main():
         features_output_dir=args.features_output,
         save_features=True,
         save_visualizations=args.visualize,
-        limit=args.limit
+        limit=args.limit,
+        split=args.split
     )
     
     print(f"\nProcessing complete! Extracted features from {len(features)} images.")

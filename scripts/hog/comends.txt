@@ -1,13 +1,17 @@
-PRZETWARZANIE OBRAZÓW NA WEKTORY:
-
-# Przetwórz cały dataset i zapisz tylko features
+# Przetwórz zbiór treningowy (domyślnie)
 python scripts/hog/hog.py
 
-# Przetwórz dataset i zapisz również wizualizacje HOG
-python scripts/hog/hog.py --visualize
+# Przetwórz zbiór testowy
+python scripts/hog/hog.py --split test
 
-# Przetestuj na ograniczonej liczbie zdjęć (np. 10)
+# Przetwórz zbiór walidacyjny
+python scripts/hog/hog.py --split valid
+
+# Test na 10 zdjęciach z wizualizacją
 python scripts/hog/hog.py --visualize --limit 10
+
+# Przetwórz cały zbiór treningowy (tylko features)
+python scripts/hog/hog.py --split train
 
 
 
