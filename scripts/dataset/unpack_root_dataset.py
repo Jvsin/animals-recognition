@@ -6,7 +6,7 @@ import zipfile
 import tempfile
 from pathlib import Path
 
-ZIP_NAME = 'Dataset Of Animal Images.zip'
+ZIP_NAME = 'Wild Animal Facing Extinction.zip'
 
 
 def find_inner_zip(root: Path) -> Path | None:
@@ -16,7 +16,7 @@ def find_inner_zip(root: Path) -> Path | None:
 
 def main(argv=None):
     script_dir = Path(__file__).resolve().parent
-    project_root = script_dir.parent
+    project_root = script_dir.parent.parent
     zip_path = project_root / ZIP_NAME
 
     if not zip_path.exists():
@@ -43,32 +43,63 @@ def main(argv=None):
             dataset_dir = project_root / 'dataset'
             dataset_dir.mkdir(parents=True, exist_ok=True)
 
-            print(f'3) Moving species folders to {dataset_dir}')
+            print(f'3) Processing extracted content')
             moved = 0
             
-            wrapper_folder = None
+            # Find the main extracted folder
+            main_folder = None
             for item in inner_tmpdir.iterdir():
-                if item.is_dir() and 'dataset' in item.name.lower():
-                    wrapper_folder = item
+                if item.is_dir():
+                    main_folder = item
                     break
             
-            if wrapper_folder:
-                source_dir = wrapper_folder
-            else:
-                source_dir = inner_tmpdir
-            
-            for item in source_dir.iterdir():
-                if item.is_dir() and not item.name.startswith('.'):
-                    target = dataset_dir / item.name
-                    if target.exists():
-                        shutil.rmtree(target)
-                    shutil.move(str(item), str(target))
-                    moved += 1
-                    print(f'   → {item.name}/')
+            if main_folder:
+                print(f'   Found main folder: {main_folder.name}')
+                
+                # Process contents of the main folder
+                for item in main_folder.iterdir():
+                    if item.is_dir():
+                        if 'rhino' in item.name.lower():
+                            print(f'   Removing: {item.name}/')
+                            shutil.rmtree(item)
+                        elif 'wild animals' in item.name.lower():
+                            print(f'   Processing: {item.name}/')
+                            # Move contents of wild animals folder to dataset root
+                            for animal_folder in item.iterdir():
+                                if animal_folder.is_dir() and not animal_folder.name.startswith('.'):
+                                    target = dataset_dir / animal_folder.name
+                                    if target.exists():
+                                        shutil.rmtree(target)
+                                    shutil.move(str(animal_folder), str(target))
+                                    moved += 1
+                                    print(f'     → {animal_folder.name}/')
 
-            print(f'Moved {moved} directories.')
+            # Additional processing: move train/test/valid folders from images to dataset root
+            images_dir = dataset_dir / 'images'
+            if images_dir.exists():
+                print(f'4) Processing images directory')
+                target_folders = ['train', 'test', 'valid']
+                
+                for folder_name in target_folders:
+                    source_folder = images_dir / folder_name
+                    if source_folder.exists():
+                        target_folder = dataset_dir / folder_name
+                        if target_folder.exists():
+                            shutil.rmtree(target_folder)
+                        shutil.move(str(source_folder), str(target_folder))
+                        print(f'   → Moved {folder_name}/ to dataset root')
+                        moved += 1
+                
+                # Remove remaining content in dataset directory except train/test/valid
+                print(f'5) Cleaning up dataset directory')
+                for item in dataset_dir.iterdir():
+                    if item.is_dir() and item.name not in ['train', 'test', 'valid']:
+                        print(f'   Removing: {item.name}/')
+                        shutil.rmtree(item)
 
-            wrapper_in_tmpdir = tmpdir / 'Dataset Of Animal Images'
+            print(f'Processed {moved} directories. Dataset structure cleaned up.')
+
+            wrapper_in_tmpdir = tmpdir / 'Wild Animal Facing Extinction'
             if wrapper_in_tmpdir.exists():
                 print(f'4) Removing wrapper folder: {wrapper_in_tmpdir}')
                 shutil.rmtree(wrapper_in_tmpdir)

@@ -4,7 +4,7 @@ Instrukcje dotyczące pobrania i rozpakowania datasetu Mendeley oraz przygotowan
 
 Pliki dodane w tym repozytorium:
 - `requirements.txt` — wymagane pakiety do pobrania i rozpakowania archiwów (requests, tqdm, py7zr, beautifulsoup4)
-- `scripts/unpack_root_dataset.py` — prosty skrypt, który szuka w root projektu pliku `Dataset Of Animals Images.zip`, rozpakowuje go i tworzy katalogi `dataset/<species>/` (używa pliku etykiet jeśli dostępny lub próbuje inferencji z nazw plików)
+- `scripts/unpack_root_dataset.py` — prosty skrypt, który szuka w root projektu pliku `Wild Animal Facing Extinction.zip`, rozpakowuje go i tworzy katalogi `dataset/<species>/` (używa pliku etykiet jeśli dostępny lub próbuje inferencji z nazw plików)
 
 Jak użyć
 1) Zainstaluj zależności (zalecane w wirtualnym środowisku):
@@ -13,10 +13,10 @@ Jak użyć
 python -m pip install -r requirements.txt
 ```
 
-2) Ręcznie pobierz plik ze strony Mendeley (https://data.mendeley.com/datasets/fk29shm2kn/2) i umieść go w katalogu głównym repozytorium pod nazwą:
+2) Ręcznie pobierz plik ze strony Mendeley (https://data.mendeley.com/datasets/vhmvfbgvxj/2) i umieść go w katalogu głównym repozytorium pod nazwą:
 
 ```
-Dataset Of Animals Images.zip
+Wild Animal Facing Extinction.zip
 ```
 
 3) Uruchom skrypt, który automatycznie rozpakowuje i organizuje pliki:
