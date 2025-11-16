@@ -1,3 +1,4 @@
+# kod z deep learning fundamentals
 import os
 import csv
 import random
@@ -7,22 +8,18 @@ from pathlib import Path
 random.seed(42)
 
 final_classes = {
-    'Cat': 0,
-    'Cow': 1,
-    'Deer': 2,
-    'Dog': 3,
-    'Goat': 4,
-    'Hen': 5,
-    'Rabbit': 6,
-    'Sheep': 7,
+    'cheetah': 0,
+    'elephant': 1,
+    'giraffe': 2,
+    'lion': 3,
+    'rhino': 4,
+    'zebra': 5,
 }
 
-# Calculate dataset_root as absolute path from project root
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent.parent
 dataset_root = str(project_root / 'dataset')
 
-# Split ratios
 train_ratio = 0.7
 test_ratio = 0.3
 
@@ -45,56 +42,44 @@ def split_and_write_csvs(comb_root, out_root, classes, train_r):
     writers = {split: csv.writer(f) for split, f in csv_files.items()}
     
     try:
-        for cls in classes.keys():
-            cls_dir = join(comb_root, cls)
-            if not os.path.exists(cls_dir):
-                print(f"Warning: Class directory {cls_dir} does not exist. "
-                      "Skipping.")
+        for split_dir in ['train', 'test', 'valid']:
+            split_path = join(comb_root, split_dir)
+            if not os.path.exists(split_path):
+                print(f"Warning: Split directory {split_path} does not exist. Skipping.")
                 continue
             
-            # Look for images in <cls>/train/images/ directory
-            train_images_dir = join(cls_dir, 'train', 'images')
-            images = []
+            class_images = {cls: [] for cls in classes.keys()}
             
-            if os.path.exists(train_images_dir):
-                for f in os.listdir(train_images_dir):
-                    full_path = join(train_images_dir, f)
-                    if os.path.isfile(full_path) and f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
-                        # Store relative path from dataset root
-                        rel_path = os.path.relpath(full_path, comb_root)
-                        images.append(rel_path)
+            for f in os.listdir(split_path):
+                full_path = join(split_path, f)
+                if os.path.isfile(full_path) and f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
+                    filename_lower = f.lower()
+                    for cls in classes.keys():
+                        if filename_lower.startswith(cls.lower()):
+                            rel_path = os.path.relpath(full_path, comb_root)
+                            class_images[cls].append(rel_path)
+                            break
             
-            if not images:
-                print(f"Warning: No images found in {train_images_dir}. Skipping.")
-                continue
-            
-            # Shuffle the images
-            random.shuffle(images)
-            n = len(images)
-            
-            # Calculate split indices
-            train_end = int(train_r * n)
-            
-            train_imgs = images[:train_end]
-            test_imgs = images[train_end:]
-            # Write to CSVs
-            splits_data = [('train', train_imgs), ('test', test_imgs)]
-            for split, imgs in splits_data:
-                for img in imgs:
-                    writers[split].writerow([img, cls])
-            
-            print(f"Class {cls}: {len(train_imgs)} train, "
-                  f"{len(test_imgs)} test images.")
+            for cls, images in class_images.items():
+                if not images:
+                    continue
+                
+                target_split = 'test' if split_dir == 'valid' else split_dir
+                
+                if target_split in writers:
+                    for img in images:
+                        writers[target_split].writerow([img, cls])
+                
+                print(f"Split {split_dir} - Class {cls}: {len(images)} images -> {target_split}.csv")
+    
     finally:
         for f in csv_files.values():
             f.close()
 
 
 if __name__ == "__main__":
-    # Create CSV files
     create_csv_files(dataset_root)
     
-    # Split and write
     split_and_write_csvs(dataset_root, dataset_root, final_classes,
                          train_ratio)
     
