@@ -14,7 +14,7 @@ def find_inner_zip(root: Path) -> Path | None:
         return p
     return None
 
-def main(argv=None):
+def main_unpack(argv=None):
     script_dir = Path(__file__).resolve().parent
     project_root = script_dir.parent.parent
     zip_path = project_root / ZIP_NAME
@@ -114,4 +114,4 @@ def main(argv=None):
 
 
 if __name__ == '__main__':
-    main()
+    main_unpack()

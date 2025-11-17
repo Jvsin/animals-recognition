@@ -76,11 +76,14 @@ def split_and_write_csvs(comb_root, out_root, classes, train_r):
         for f in csv_files.values():
             f.close()
 
-
-if __name__ == "__main__":
+def create_splits():
     create_csv_files(dataset_root)
     
     split_and_write_csvs(dataset_root, dataset_root, final_classes,
                          train_ratio)
+
+
+if __name__ == "__main__":
+    create_splits()
     
     print("Dataset splitting completed!")
