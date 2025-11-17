@@ -12,6 +12,11 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import argparse
 from tqdm import tqdm
+import sys
+
+# Import rescale_image from scaler.py
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from scaler import rescale_image
 
 
 class HOGTransformer:
@@ -48,9 +53,16 @@ class HOGTransformer:
             features: HOG feature vector
             hog_image: HOG visualization image (if visualize=True)
         """
+        # Rescale image to square using scaler.py function
+        image = rescale_image(image)
+        
+        # Convert to uint8 if needed (rescale_image returns float)
+        if image.dtype == np.float64 or image.dtype == np.float32:
+            image = (image * 255).astype(np.uint8)
+        
         # Convert to grayscale if needed
         if len(image.shape) == 3 and not self.multichannel:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         
         # Extract HOG features
         if self.visualize:
