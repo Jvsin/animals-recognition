@@ -24,6 +24,9 @@ train_ratio = 0.7
 test_ratio = 0.3
 
 
+def convert_class_name_to_index(class_name):
+    return final_classes.get(class_name, -1)
+
 def create_csv_files(out_root):
     os.makedirs(out_root, exist_ok=True)
     for split in ['train', 'test']:
@@ -77,6 +80,8 @@ def split_and_write_csvs(comb_root, out_root, classes, train_r):
             f.close()
 
 def create_splits():
+    # todo: make dataset splits balanced
+    
     create_csv_files(dataset_root)
     
     split_and_write_csvs(dataset_root, dataset_root, final_classes,
