@@ -5,7 +5,7 @@ from skimage.io import imread
 import numpy as np
 
 #%% Set size of image 
-NEW_IMAGE_SIZE = (128, 128)
+NEW_IMAGE_SIZE = (256, 256)
 
 #%% Function to paint image to square by adding padding
 def pad_to_square(image, old_shape, new_shape):
@@ -40,21 +40,24 @@ def rescale_image(image):
     return rescaled_image
     
 
-#%% test 
-# path to dataset/test/cheetah168250145_.jpg relative to this script
-dataset_path = Path(__file__).resolve().parent.parent / "dataset" / "test" / "cheetah168250145_.jpg"
+if __name__ == "__main__":
+    #%% test 
+    # path to dataset/test/cheetah168250145_.jpg relative to this script
+    dataset_path = Path(__file__).resolve().parent.parent / "dataset" / "test" / "cheetah168250145_.jpg"
 
-if not dataset_path.exists():
-    raise FileNotFoundError(f"File not found: {dataset_path}")
+    if not dataset_path.exists():
+        raise FileNotFoundError(f"File not found: {dataset_path}")
 
-image = imread(str(dataset_path))
-rescaled_image = rescale_image(image)
+    image = imread(str(dataset_path))
+    rescaled_image = rescale_image(image)
 
-import matplotlib.pyplot as plt
 
-plt.figure(figsize=(4, 4))
-plt.imshow(rescaled_image)
-plt.axis('off')
-plt.title("Rescaled image")
-plt.show()
+
+    import matplotlib.pyplot as plt
+
+    plt.figure(figsize=(4, 4))
+    plt.imshow(rescaled_image)
+    plt.axis('off')
+    plt.title("Rescaled image")
+    plt.show()
     
