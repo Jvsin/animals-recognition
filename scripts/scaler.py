@@ -18,14 +18,10 @@ def pad_to_square(image, old_shape, new_shape):
     pad_left = diff_x // 2
     pad_right = diff_x - pad_left
 
-    if len(image.shape) == 3:
-        color = np.median(image, axis=(0,1))
-        pad = ((pad_top, pad_bottom), (pad_left, pad_right))
-        padded = np.stack([np.pad(image[:,:,c], pad, mode='constant', constant_values=color[c]) for c in range(3)], axis=2)
-    else:  
-        color = np.median(image)
-        padded = np.pad(image, ((pad_top, pad_bottom), (pad_left, pad_right)), mode='constant', constant_values=color)
-
+    color = np.median(image, axis=(0,1))
+    pad = ((pad_top, pad_bottom), (pad_left, pad_right))
+    padded = np.stack([np.pad(image[:,:,c], pad, mode='constant', constant_values=color[c]) for c in range(3)], axis=2)
+   
     return padded
     
 
