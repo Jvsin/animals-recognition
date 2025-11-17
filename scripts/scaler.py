@@ -39,22 +39,3 @@ def rescale_image(image):
 
     return rescaled_image
     
-
-#%% test 
-# path to dataset/test/cheetah168250145_.jpg relative to this script
-dataset_path = Path(__file__).resolve().parent.parent / "dataset" / "test" / "cheetah168250145_.jpg"
-
-if not dataset_path.exists():
-    raise FileNotFoundError(f"File not found: {dataset_path}")
-
-image = imread(str(dataset_path))
-rescaled_image = rescale_image(image)
-
-import matplotlib.pyplot as plt
-
-plt.figure(figsize=(4, 4))
-plt.imshow(rescaled_image)
-plt.axis('off')
-plt.title("Rescaled image")
-plt.show()
-    
