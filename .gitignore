@@ -82,4 +82,5 @@ htmlcov/
 
 /dataset/
 /output/
+/output/images/
 *.png

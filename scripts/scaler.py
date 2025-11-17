@@ -1,11 +1,16 @@
 #%% Imports 
 from skimage.transform import resize
-from pathlib import Path
-from skimage.io import imread
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
 
 #%% Set size of image 
 NEW_IMAGE_SIZE = (256, 256)
+
+#%% Set Directories
+INPUT_DIR = 'dataset/'
+OUTPUT_DIR = 'output/images/'
 
 #%% Function to paint image to square by adding padding
 def pad_to_square(image, old_shape, new_shape):
@@ -38,3 +43,19 @@ def rescale_image(image):
     rescaled_image = resize(squared_image, NEW_IMAGE_SIZE, anti_aliasing=True)
 
     return rescaled_image
+
+#%% rescale all images in a given directory and save to output directory
+def rescale_all_images():
+    print("Rescaling all images...")
+    for name in ['train', 'test']:
+        print(f"Processing {name} set...")
+        data = pd.read_csv(f'{INPUT_DIR}/{name}.csv')
+        for _, row in data.iterrows():
+            image_path = f"{INPUT_DIR}/{row['image_path']}"
+            image = plt.imread(image_path)
+            rescaled_image = rescale_image(image)
+            output_path = f"{OUTPUT_DIR}/{row['image_path']}"
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            plt.imsave(output_path, rescaled_image)
+    
+    print("Rescaling completed.")
