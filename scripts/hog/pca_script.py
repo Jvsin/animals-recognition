@@ -13,7 +13,7 @@ import sys
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from pca import perform_pca, N_COMPONENTS
 
-
+#%% Function to load HOG features from NPZ file
 def load_hog_features(features_path):
     """
     Load HOG features from NPZ file.
@@ -35,7 +35,6 @@ def load_hog_features(features_path):
     filenames = []
     
     for key in data.files:
-        # Key format: "class_name/image_filename.jpg"
         class_name = key.split('/')[0]
         filename = key.split('/')[1]
         
@@ -57,7 +56,7 @@ def load_hog_features(features_path):
     
     return X, y, filenames
 
-
+#%% Function to save PCA results
 def save_pca_results(X_reduced, y, filenames, pca_model, output_dir):
     """
     Save PCA-reduced features and model.
@@ -72,7 +71,6 @@ def save_pca_results(X_reduced, y, filenames, pca_model, output_dir):
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     
-    # Save reduced features as NPZ
     features_dict = {}
     for i, (features, label, filename) in enumerate(zip(X_reduced, y, filenames)):
         key = f"{label}/{filename}"
@@ -82,13 +80,11 @@ def save_pca_results(X_reduced, y, filenames, pca_model, output_dir):
     np.savez(features_file, **features_dict)
     print(f"\nSaved PCA features to {features_file}")
     
-    # Save PCA model
     pca_file = output_path / 'pca_model.pkl'
     with open(pca_file, 'wb') as f:
         pickle.dump(pca_model, f)
     print(f"Saved PCA model to {pca_file}")
     
-    # Save info file
     info_file = output_path / 'pca_info.txt'
     with open(info_file, 'w') as f:
         f.write(f"Number of samples: {len(X_reduced)}\n")
@@ -120,7 +116,6 @@ def main():
     
     args = parser.parse_args()
     
-    # Load HOG features
     features_file = Path(args.features_dir) / 'hog_features.npz'
     if not features_file.exists():
         print(f"Error: Features file not found: {features_file}")
@@ -130,14 +125,12 @@ def main():
     
     print(f"\nOriginal feature dimensions: {X.shape[1]}")
     
-    # Apply PCA using function from pca.py
     print(f"Applying PCA with {N_COMPONENTS} components...")
     X_reduced, pca_model = perform_pca(X)
     
     print(f"Reduced feature dimensions: {X_reduced.shape[1]}")
     print(f"Explained variance: {pca_model.explained_variance_ratio_.sum():.4f}")
     
-    # Save results
     save_pca_results(X_reduced, y, filenames, pca_model, args.output_dir)
     
     print("\n" + "="*50)

@@ -18,7 +18,7 @@ import sys
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from scaler import rescale_image
 
-
+#%% HOG Feature Extraction Class
 class HOGTransformer:
     """
     Class for extracting HOG features from images.
@@ -53,18 +53,14 @@ class HOGTransformer:
             features: HOG feature vector
             hog_image: HOG visualization image (if visualize=True)
         """
-        # Rescale image to square using scaler.py function
         image = rescale_image(image)
         
-        # Convert to uint8 if needed (rescale_image returns float)
         if image.dtype == np.float64 or image.dtype == np.float32:
             image = (image * 255).astype(np.uint8)
         
-        # Convert to grayscale if needed
         if len(image.shape) == 3 and not self.multichannel:
             image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         
-        # Extract HOG features
         if self.visualize:
             features, hog_image = hog(
                 image,
@@ -99,30 +95,26 @@ class HOGTransformer:
         Returns:
             features: HOG feature vector
         """
-        # Read image
         image = cv2.imread(str(image_path))
         
         if image is None:
             print(f"Error: Could not read image {image_path}")
             return None
         
-        # Extract HOG features
         features, hog_image = self.extract_hog_features(image)
         
-        # Save visualization if requested
+        # zapis wizyalizacji zdjęcia HOG
         if save_visualization and hog_image is not None and output_dir is not None:
             output_path = Path(output_dir)
             output_path.mkdir(parents=True, exist_ok=True)
             
-            # Save only HOG image without any labels or axes
             filename = Path(image_path).stem + '_hog.png'
             
-            # Convert HOG image to proper format and save directly
             hog_image_normalized = (hog_image * 255).astype(np.uint8)
             cv2.imwrite(str(output_path / filename), hog_image_normalized)
         
         return features
-    
+    #%% Function to process entire dataset
     def process_dataset(self, dataset_dir, photos_output_dir=None, features_output_dir=None, 
                        save_features=True, save_visualizations=False, limit=None, split='train'):
         """
@@ -143,7 +135,6 @@ class HOGTransformer:
         dataset_path = Path(dataset_dir)
         all_features = {}
         
-        # Find all image files in the specified split folder
         split_path = dataset_path / split
         if not split_path.exists():
             print(f"Error: Split folder '{split}' not found in {dataset_dir}")
@@ -162,15 +153,11 @@ class HOGTransformer:
             image_files = image_files[:limit]
             print(f"Processing only {limit} images (limit applied)")
         
-        # Process each image with progress bar
         for image_path in tqdm(image_files, desc="Extracting HOG features", unit="img", 
                                bar_format='{l_bar}{bar:30}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]'):
-            # Extract class name from filename (e.g., "cheetah10001500367_.jpg" -> "cheetah")
             filename = image_path.stem
-            # Class name is everything before the first digit
             class_name = ''.join(c for c in filename if not c.isdigit()).rstrip('_')
             
-            # Set output directory for visualizations (by class)
             vis_output_dir = None
             if save_visualizations and photos_output_dir:
                 vis_output_dir = Path(photos_output_dir) / class_name
@@ -182,7 +169,6 @@ class HOGTransformer:
             )
             
             if features is not None:
-                # Store with class name and image name
                 key = f"{class_name}/{image_path.name}"
                 all_features[key] = features
         
@@ -191,12 +177,10 @@ class HOGTransformer:
             output_path = Path(features_output_dir)
             output_path.mkdir(parents=True, exist_ok=True)
             
-            # Save as numpy file
             features_file = output_path / 'hog_features.npz'
             np.savez(features_file, **all_features)
             print(f"\nSaved HOG features to {features_file}")
             
-            # Save feature shape info
             first_feature = next(iter(all_features.values()))
             info_file = output_path / 'hog_info.txt'
             with open(info_file, 'w') as f:
@@ -210,7 +194,7 @@ class HOGTransformer:
         
         return all_features
 
-
+#%% Main function of HOG feature extraction script
 def main():
     """Main function to run HOG feature extraction."""
     parser = argparse.ArgumentParser(
@@ -275,7 +259,6 @@ def main():
     
     args = parser.parse_args()
     
-    # Create HOG transformer
     transformer = HOGTransformer(
         orientations=args.orientations,
         pixels_per_cell=tuple(args.pixels_per_cell),
@@ -284,7 +267,6 @@ def main():
         multichannel=False
     )
     
-    # Process dataset
     features = transformer.process_dataset(
         dataset_dir=args.dataset_dir,
         photos_output_dir=args.photos_output,
