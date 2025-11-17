@@ -81,4 +81,5 @@ htmlcov/
 *.ear
 
 /dataset/
+/output/
 *.png
