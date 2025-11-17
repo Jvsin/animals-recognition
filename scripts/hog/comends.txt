@@ -1,0 +1,31 @@
+# Przetwórz zbiór treningowy (domyślnie)
+python scripts/hog/hog.py
+
+# Przetwórz zbiór testowy
+python scripts/hog/hog.py --split test
+
+# Przetwórz zbiór walidacyjny
+python scripts/hog/hog.py --split valid
+
+# Test na 10 zdjęciach z wizualizacją
+python scripts/hog/hog.py --visualize --limit 10
+
+# Przetwórz cały zbiór treningowy (tylko features)
+python scripts/hog/hog.py --split train
+
+
+
+
+WYŚWIETLANIE FEATURES (DO KONTROLI):
+
+# Podstawowe wyświetlanie (10 pierwszych wpisów)
+python scripts/hog/view_hog_features.py
+
+# Wyświetl więcej wpisów
+python scripts/hog/view_hog_features.py --limit 20
+
+# Pokaż też pierwsze 10 wartości z każdego wektora
+python scripts/hog/view_hog_features.py --show-vector
+
+# Wskaż inny plik NPZ
+python scripts/hog/view_hog_features.py --features-file "path/to/features.npz"

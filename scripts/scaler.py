@@ -5,7 +5,7 @@ from skimage.io import imread
 import numpy as np
 
 #%% Set size of image 
-NEW_IMAGE_SIZE = (128, 128)
+NEW_IMAGE_SIZE = (256, 256)
 
 #%% Function to paint image to square by adding padding
 def pad_to_square(image, old_shape, new_shape):
@@ -38,4 +38,3 @@ def rescale_image(image):
     rescaled_image = resize(squared_image, NEW_IMAGE_SIZE, anti_aliasing=True)
 
     return rescaled_image
-    
