@@ -19,8 +19,8 @@ class HOGTransformer:
     Class for extracting HOG features from images.
     """
     
-    def __init__(self, orientations=9, pixels_per_cell=(8, 8), 
-                 cells_per_block=(2, 2), visualize=True, multichannel=False, target_size=(256, 256)):
+    def __init__(self, orientations=9, pixels_per_cell=(16, 16), 
+                 cells_per_block=(2, 2), visualize=True, multichannel=False):
         """
         Initialize HOG transformer with parameters.
         
@@ -30,14 +30,12 @@ class HOGTransformer:
             cells_per_block: Number of cells in each block
             visualize: Whether to return visualization image
             multichannel: Whether to process color images
-            target_size: Target size (width, height) to resize all images
         """
         self.orientations = orientations
         self.pixels_per_cell = pixels_per_cell
         self.cells_per_block = cells_per_block
         self.visualize = visualize
         self.multichannel = multichannel
-        self.target_size = target_size
     
     def extract_hog_features(self, image):
         """
@@ -50,9 +48,6 @@ class HOGTransformer:
             features: HOG feature vector
             hog_image: HOG visualization image (if visualize=True)
         """
-        # Resize image to target size for consistent feature vector length
-        image = cv2.resize(image, self.target_size)
-        
         # Convert to grayscale if needed
         if len(image.shape) == 3 and not self.multichannel:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -67,9 +62,6 @@ class HOGTransformer:
                 visualize=self.visualize,
                 channel_axis=-1 if self.multichannel else None
             )
-            
-            # Rescale histogram for better display
-            hog_image = exposure.rescale_intensity(hog_image, in_range=(0, 10))
             
             return features, hog_image
         else:
@@ -268,13 +260,6 @@ def main():
         choices=['train', 'test', 'valid'],
         help='Which dataset split to process (train, test, or valid)'
     )
-    parser.add_argument(
-        '--target-size',
-        type=int,
-        nargs=2,
-        default=[256, 256],
-        help='Target size (width height) to resize all images'
-    )
     
     args = parser.parse_args()
     
@@ -284,8 +269,7 @@ def main():
         pixels_per_cell=tuple(args.pixels_per_cell),
         cells_per_block=tuple(args.cells_per_block),
         visualize=True,
-        multichannel=False,
-        target_size=tuple(args.target_size)
+        multichannel=False
     )
     
     # Process dataset
