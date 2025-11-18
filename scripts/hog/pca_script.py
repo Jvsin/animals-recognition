@@ -13,9 +13,12 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 # Bierzemy tylko N_COMPONENTS, żeby była spójność z całym projektem
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-from pca import N_COMPONENTS
-
+try:
+    from scripts.pca import N_COMPONENTS
+except Exception as e:
+    raise ImportError(
+        f"Could not import 'pca' module from sys.path: {e}"
+    )
 
 # =====================================================================
 # LOAD HOG FEATURES

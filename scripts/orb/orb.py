@@ -10,28 +10,17 @@ import argparse
 from tqdm import tqdm
 import sys
 import random
-import importlib.util
 
 # ============================================
 # Import rescale_image z scaler.py (tak jak w HOG)
 # ============================================
 
-scaler_path = Path(__file__).resolve().parent.parent / "scaler.py"
-if scaler_path.is_file():
-    spec = importlib.util.spec_from_file_location("scaler", str(scaler_path))
-    if spec is None or spec.loader is None:
-        raise ImportError(f"Could not create module spec or loader from {scaler_path}")
-    scaler_mod = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(scaler_mod)  # type: ignore
-    rescale_image = scaler_mod.rescale_image
-else:
-    try:
-        from scaler import rescale_image  # type: ignore
-    except Exception as e:
-        raise ImportError(
-            f"Could not import 'scaler' module from {scaler_path} or sys.path: {e}"
-        )
+try:
+    from scripts.scaler import rescale_image
+except Exception as e:
+    raise ImportError(
+        f"Could not import 'scaler' module from sys.path: {e}"
+    )
 
 
 class ORBTransformer:
