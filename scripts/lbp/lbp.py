@@ -115,7 +115,7 @@ class LBPTransformer:
             return {}
 
         exts = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
-        image_files = sorted({p for ext in exts for p in split_path.glob(ext)})
+        files = sorted({p for ext in exts for p in split_path.glob(ext)})
 
         print(f"Found {len(files)} images in split '{split}'")
 
