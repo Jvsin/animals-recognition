@@ -118,10 +118,8 @@ class LBPTransformer:
             print(f"Split '{split}' not found!")
             return {}
 
-        files = []
-        for ext in ["*.jpg", "*.jpeg", "*.png", "*.bmp"]:
-            files.extend(split_path.glob(ext))
-            files.extend(split_path.glob(ext.upper()))
+        exts = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
+        files = sorted({p for ext in exts for p in split_path.glob(ext)})
 
         print(f"Found {len(files)} images in split '{split}'")
 
@@ -146,7 +144,8 @@ class LBPTransformer:
             )
 
             if feats is not None:
-                key = f"{class_name}/{img_path.name}"
+                relative_path = img_path.relative_to(dataset_path)
+                key = str(relative_path)
                 all_features[key] = feats
 
         if save_features and features_output_dir and all_features:

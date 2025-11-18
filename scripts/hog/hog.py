@@ -119,10 +119,8 @@ class HOGTransformer:
             return {}
 
         # Wczytywanie obrazów
-        image_files = []
-        for ext in ["*.jpg", "*.jpeg", "*.png", "*.bmp"]:
-            image_files.extend(split_path.glob(ext))
-            image_files.extend(split_path.glob(ext.upper()))
+        exts = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
+        image_files = sorted({p for ext in exts for p in split_path.glob(ext)})
 
         print(f"Found {len(image_files)} images in '{split}' split.")
 
@@ -152,7 +150,8 @@ class HOGTransformer:
             )
 
             if feats is not None:
-                key = f"{class_name}/{img_path.name}"
+                relative_path = img_path.relative_to(dataset_path)
+                key = str(relative_path)
                 all_features[key] = feats
 
         # Zapis cech

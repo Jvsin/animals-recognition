@@ -162,11 +162,8 @@ class ORBTransformer:
             return all_features
 
         # Zbieramy listę wszystkich obrazów
-        image_extensions = [".jpg", ".jpeg", ".png", ".bmp"]
-        image_files = []
-        for ext in image_extensions:
-            image_files.extend(split_path.glob(f"*{ext}"))
-            image_files.extend(split_path.glob(f"*{ext.upper()}"))
+        exts = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
+        image_files = sorted({p for ext in exts for p in split_path.glob(ext)})
 
         print(f"Found {len(image_files)} images in '{split}' split")
 
@@ -198,7 +195,8 @@ class ORBTransformer:
             )
 
             if features is not None:
-                key = f"{class_name}/{image_path.name}"
+                relative_path = image_path.relative_to(dataset_path)
+                key = str(relative_path)
                 all_features[key] = features
 
         # Zapis wektorów cech do pliku NPZ + info do TXT
