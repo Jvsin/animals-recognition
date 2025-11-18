@@ -1,0 +1,37 @@
+# Wejście do katalogu projektu
+cd "C:\Users\Asus\Desktop\Do_zrobienia\Analiza obrazów cyfrowych\Projekt"
+
+
+# EKSTRAKCJA CECH ORB  #
+
+
+# Przetwórz zbiór treningowy (domyślnie, bez wizualizacji)
+python scripts/orb/orb.py --split train
+
+# Przetwórz zbiór testowy
+python scripts/orb/orb.py --split test
+
+# Przetwórz zbiór walidacyjny
+python scripts/orb/orb.py --split valid
+
+# Test na 10 losowych zdjęciach z wizualizacją punktów ORB
+python scripts/orb/orb.py --split train --visualize --limit 10
+
+#zapis 10 obrazow
+python scripts/orb/orb.py --split train --visualize --limit 10
+
+
+# WYŚWIETLANIE CECH ORB (NPZ) #
+
+# Podstawowe wyświetlanie (10 pierwszych wpisów)
+python scripts/orb/view_orb_features.py
+
+# Wyświetl więcej wpisów (np. 20)
+python scripts/orb/view_orb_features.py --limit 20
+
+# Pokaż też pierwsze 10 wartości z każdego wektora
+python scripts/orb/view_orb_features.py --limit 20 --show-vector
+
+
+#PCA DLA ORB
+python scripts/orb/pca_script.py

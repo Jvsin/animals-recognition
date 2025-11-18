@@ -1,3 +1,7 @@
+cd "C:\Users\Asus\Desktop\Do_zrobienia\Analiza obrazów cyfrowych\Projekt"
+
+#KESTRAKCJA CECH
+
 # Przetwórz zbiór treningowy (domyślnie)
 python scripts/hog/hog.py
 
@@ -13,7 +17,8 @@ python scripts/hog/hog.py --visualize --limit 10
 # Przetwórz cały zbiór treningowy (tylko features)
 python scripts/hog/hog.py --split train
 
-
+#zapis 10 obrazow
+python scripts/hog/hog.py --split train --visualize --limit 10
 
 
 WYŚWIETLANIE FEATURES (DO KONTROLI):
@@ -29,3 +34,8 @@ python scripts/hog/view_hog_features.py --show-vector
 
 # Wskaż inny plik NPZ
 python scripts/hog/view_hog_features.py --features-file "path/to/features.npz"
+
+
+#PCA DLA HOG
+python scripts/hog/pca_script.py
+

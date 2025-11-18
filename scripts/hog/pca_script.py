@@ -1,6 +1,6 @@
 """
 PCA Script for HOG Features
-Loads HOG features and applies PCA dimensionality reduction using pca.py
+Loads HOG features and applies PCA dimensionality reduction.
 """
 
 import numpy as np
@@ -9,135 +9,141 @@ import argparse
 import pickle
 import sys
 
-# Import PCA function from pca.py
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-from pca import perform_pca, N_COMPONENTS
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
-#%% Function to load HOG features from NPZ file
+# Bierzemy tylko N_COMPONENTS, żeby była spójność z całym projektem
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from pca import N_COMPONENTS
+
+
+# =====================================================================
+# LOAD HOG FEATURES
+# =====================================================================
 def load_hog_features(features_path):
     """
     Load HOG features from NPZ file.
-    
-    Args:
-        features_path: Path to NPZ file with HOG features
-        
-    Returns:
-        X: Feature matrix (n_samples, n_features)
-        y: Labels array (n_samples,)
-        filenames: List of image filenames
     """
-    print(f"Loading HOG features from {features_path}...")
-    
+    print(f"Loading HOG features from {features_path}...\n")
+
     data = np.load(features_path)
-    
-    X = []
-    y = []
-    filenames = []
-    
+    X, y, filenames = [], [], []
+
     for key in data.files:
-        class_name = key.split('/')[0]
-        filename = key.split('/')[1]
-        
-        features = data[key]
-        
-        X.append(features)
+        class_name = key.split("/")[0]
+        filename = key.split("/")[1]
+        feats = data[key]
+
+        X.append(feats)
         y.append(class_name)
         filenames.append(filename)
-    
-    X = np.array(X)
+
+    X = np.array(X, dtype=np.float32)
     y = np.array(y)
-    
+
     print(f"Loaded {len(X)} samples with {X.shape[1]} features each")
-    print(f"Classes: {np.unique(y)}")
-    print(f"Samples per class:")
+    print("Classes:", np.unique(y))
+    print("Samples per class:")
     for label in np.unique(y):
         count = np.sum(y == label)
         print(f"  {label}: {count}")
-    
+
     return X, y, filenames
 
-#%% Function to save PCA results
+
+# =====================================================================
+# SAVE PCA RESULTS
+# =====================================================================
 def save_pca_results(X_reduced, y, filenames, pca_model, output_dir):
     """
-    Save PCA-reduced features and model.
-    
-    Args:
-        X_reduced: Reduced feature matrix
-        y: Labels array
-        filenames: List of image filenames
-        pca_model: Fitted PCA model
-        output_dir: Directory to save results
+    Save PCA-reduced features and PCA model + info.
     """
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
-    
+
+    # zapis z powrotem do słownika label/filename → vec
     features_dict = {}
-    for i, (features, label, filename) in enumerate(zip(X_reduced, y, filenames)):
+    for feats, label, filename in zip(X_reduced, y, filenames):
         key = f"{label}/{filename}"
-        features_dict[key] = features
-    
-    features_file = output_path / 'pca_features.npz'
+        features_dict[key] = feats
+
+    features_file = output_path / "hog_pca_features.npz"
     np.savez(features_file, **features_dict)
     print(f"\nSaved PCA features to {features_file}")
-    
-    pca_file = output_path / 'pca_model.pkl'
-    with open(pca_file, 'wb') as f:
+
+    pca_file = output_path / "hog_pca_model.pkl"
+    with open(pca_file, "wb") as f:
         pickle.dump(pca_model, f)
     print(f"Saved PCA model to {pca_file}")
-    
-    info_file = output_path / 'pca_info.txt'
-    with open(info_file, 'w') as f:
+
+    info_file = output_path / "hog_pca_info.txt"
+    with open(info_file, "w") as f:
         f.write(f"Number of samples: {len(X_reduced)}\n")
+        f.write(f"Original feature dimensions: {pca_model.n_features_in_}\n")
         f.write(f"Reduced feature dimensions: {X_reduced.shape[1]}\n")
-        f.write(f"PCA components: {N_COMPONENTS}\n")
-        f.write(f"Explained variance ratio: {pca_model.explained_variance_ratio_.sum():.4f}\n")
-        f.write(f"\nClasses: {list(np.unique(y))}\n")
-        f.write(f"\nSamples per class:\n")
+        f.write(f"Requested PCA components: {N_COMPONENTS}\n")
+        f.write(f"Used PCA components: {pca_model.n_components_}\n")
+        f.write(
+            f"Explained variance ratio sum: {pca_model.explained_variance_ratio_.sum():.4f}\n"
+        )
+        f.write("\nClasses: " + ", ".join(map(str, np.unique(y))) + "\n")
+        f.write("\nSamples per class:\n")
         for label in np.unique(y):
             count = np.sum(y == label)
             f.write(f"  {label}: {count}\n")
     print(f"Saved info to {info_file}")
 
 
+# =====================================================================
+# MAIN
+# =====================================================================
 def main():
-    parser = argparse.ArgumentParser(description='Apply PCA to HOG features')
+    parser = argparse.ArgumentParser(description="Apply PCA to HOG features")
     parser.add_argument(
-        '--features-dir',
+        "--features-dir",
         type=str,
-        default='output/hog/features',
-        help='Directory containing HOG features (hog_features.npz)'
+        default="output/hog/features",
+        help="Directory containing HOG features (hog_features.npz)",
     )
     parser.add_argument(
-        '--output-dir',
+        "--output-dir",
         type=str,
-        default='output/pca',
-        help='Directory to save PCA results'
+        default="output/hog_pca",
+        help="Directory to save PCA results",
     )
-    
+
     args = parser.parse_args()
-    
-    features_file = Path(args.features_dir) / 'hog_features.npz'
+
+    features_file = Path(args.features_dir) / "hog_features.npz"
     if not features_file.exists():
         print(f"Error: Features file not found: {features_file}")
         return
-    
+
     X, y, filenames = load_hog_features(features_file)
-    
+
     print(f"\nOriginal feature dimensions: {X.shape[1]}")
-    
-    print(f"Applying PCA with {N_COMPONENTS} components...")
-    X_reduced, pca_model = perform_pca(X)
-    
+    print(f"Applying PCA with up to {N_COMPONENTS} components...\n")
+
+    # Skalowanie jak w ORB/SIFT
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # Bezpieczeństwo: nie więcej komponentów niż liczba próbek/cech
+    n_components = min(N_COMPONENTS, X_scaled.shape[0], X_scaled.shape[1])
+
+    pca = PCA(n_components=n_components)
+    X_reduced = pca.fit_transform(X_scaled)
+
     print(f"Reduced feature dimensions: {X_reduced.shape[1]}")
-    print(f"Explained variance: {pca_model.explained_variance_ratio_.sum():.4f}")
-    
-    save_pca_results(X_reduced, y, filenames, pca_model, args.output_dir)
-    
-    print("\n" + "="*50)
-    print("PCA processing complete!")
+    print(f"Explained variance: {pca.explained_variance_ratio_.sum():.4f}")
+
+    save_pca_results(X_reduced, y, filenames, pca, args.output_dir)
+
+    print("\n" + "=" * 50)
+    print("HOG PCA processing complete!")
     print(f"Dimensionality reduced: {X.shape[1]} → {X_reduced.shape[1]}")
-    print("="*50)
+    print("=" * 50)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

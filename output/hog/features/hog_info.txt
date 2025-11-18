@@ -1,6 +1,6 @@
 Number of images: 10
-Feature vector length: 8100
-HOG parameters:
+Feature vector length: 34596
+Parameters:
   - Orientations: 9
   - Pixels per cell: (8, 8)
   - Cells per block: (2, 2)
