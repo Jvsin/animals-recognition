@@ -114,10 +114,8 @@ class LBPTransformer:
             print(f"Split '{split}' not found!")
             return {}
 
-        files = []
-        for ext in ["*.jpg", "*.jpeg", "*.png", "*.bmp"]:
-            files.extend(split_path.glob(ext))
-            files.extend(split_path.glob(ext.upper()))
+        exts = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
+        image_files = sorted({p for ext in exts for p in split_path.glob(ext)})
 
         print(f"Found {len(files)} images in split '{split}'")
 
