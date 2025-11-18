@@ -209,7 +209,8 @@ class ORBTransformer:
             )
 
             if features is not None:
-                key = f"{class_name}/{image_path.name}"
+                relative_path = image_path.relative_to(dataset_path)
+                key = str(relative_path)
                 all_features[key] = features
 
         # Zapis wektorów cech do pliku NPZ + info do TXT

@@ -134,7 +134,8 @@ class SIFTTransformer:
             )
 
             if feats is not None:
-                key = f"{class_name}/{img_path.name}"
+                relative_path = img_path.relative_to(dataset_path)
+                key = str(relative_path)
                 all_features[key] = feats
 
         if save_features and features_output_dir and all_features:

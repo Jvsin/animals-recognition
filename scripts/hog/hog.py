@@ -148,7 +148,8 @@ class HOGTransformer:
             )
 
             if feats is not None:
-                key = f"{class_name}/{img_path.name}"
+                relative_path = img_path.relative_to(dataset_path)
+                key = str(relative_path)
                 all_features[key] = feats
 
         # Zapis cech
