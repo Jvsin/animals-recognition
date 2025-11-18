@@ -12,8 +12,12 @@ from tqdm import tqdm
 import sys
 
 # Import rescale_image from scaler.py
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-from scaler import rescale_image
+try:
+    from scripts.scaler import rescale_image
+except Exception as e:
+    raise ImportError(
+        f"Could not import 'scaler' module from sys.path: {e}"
+    )
 
 
 # =====================================================================

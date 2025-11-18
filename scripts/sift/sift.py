@@ -19,7 +19,12 @@ if scaler_path.is_file():
     spec.loader.exec_module(scaler_mod)
     rescale_image = scaler_mod.rescale_image
 else:
-    from scaler import rescale_image
+    try:
+        from scripts.scaler import rescale_image
+    except Exception as e:
+        raise ImportError(
+            f"Could not import 'scaler' module from {scaler_path} or sys.path: {e}"
+        )
 
 
 class SIFTTransformer:

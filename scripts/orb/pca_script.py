@@ -13,8 +13,12 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 # Import only N_COMPONENTS from global pca.py, żeby była spójność z HOG
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-from pca import N_COMPONENTS
+try:
+    from scripts.pca import N_COMPONENTS
+except Exception as e:
+    raise ImportError(
+        f"Could not import 'pca' module from sys.path: {e}"
+    )
 
 
 # =====================================================================
