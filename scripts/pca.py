@@ -4,7 +4,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 #%% Set Number of components for PCA
-N_COMPONENTS = 100
+N_COMPONENTS = 400
 
 #%% Function to perform PCA on dataset
 def perform_pca(data_test, data_train):
