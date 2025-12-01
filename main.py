@@ -21,7 +21,7 @@ from scripts.classifiers.random_forests import RandomForestClassifier
 
 from scripts.classifiers.metrics import calculate_metrics, plot_confusion_matrix
 
-FORCE_REEXTRACT = True
+FORCE_REEXTRACT = False
 
 #%% Extract dataset paths and labels from a given directory
 main_unpack()
@@ -167,65 +167,65 @@ x_sift_train, x_sift_test = compute_pca_for_feature(
 #%% Classification - SVM
 # HOG + SVM
 svm_hog_classifier = SVMClassifier()
-svm_hog_classifier.fit(x_hog_train, y_train)
+svm_hog_classifier.tune_parameters(x_hog_train, y_train)
 y_hog_svm_pred = svm_hog_classifier.predict(x_hog_test)
 
 # LBP + SVM
 svm_lbp_classifier = SVMClassifier()
-svm_lbp_classifier.fit(x_lbp_train, y_train)
+svm_lbp_classifier.tune_parameters(x_lbp_train, y_train)
 y_lbp_svm_pred = svm_lbp_classifier.predict(x_lbp_test)
 
 # ORB + SVM
 svm_orb_classifier = SVMClassifier()
-svm_orb_classifier.fit(x_orb_train, y_train)
+svm_orb_classifier.tune_parameters(x_orb_train, y_train)
 y_orb_svm_pred = svm_orb_classifier.predict(x_orb_test)
 
 # SIFT + SVM
 svm_sift_classifier = SVMClassifier()
-svm_sift_classifier.fit(x_sift_train, y_train)
+svm_sift_classifier.tune_parameters(x_sift_train, y_train)
 y_sift_svm_pred = svm_sift_classifier.predict(x_sift_test)
 
 #%% Classification - Random Forest
 # HOG + RF
 rf_hog_classifier = RandomForestClassifier()
-rf_hog_classifier.fit(x_hog_train, y_train)
+rf_hog_classifier.tune_parameters(x_hog_train, y_train)
 y_hog_rf_pred = rf_hog_classifier.predict(x_hog_test)
 
 # LBP + RF
 rf_lbp_classifier = RandomForestClassifier()
-rf_lbp_classifier.fit(x_lbp_train, y_train)
+rf_lbp_classifier.tune_parameters(x_lbp_train, y_train)
 y_lbp_rf_pred = rf_lbp_classifier.predict(x_lbp_test)
 
 # ORB + RF
 rf_orb_classifier = RandomForestClassifier()
-rf_orb_classifier.fit(x_orb_train, y_train)
+rf_orb_classifier.tune_parameters(x_orb_train, y_train)
 y_orb_rf_pred = rf_orb_classifier.predict(x_orb_test)
 
 # SIFT + RF
 rf_sift_classifier = RandomForestClassifier()
-rf_sift_classifier.fit(x_sift_train, y_train)
+rf_sift_classifier.tune_parameters(x_sift_train, y_train)
 y_sift_rf_pred = rf_sift_classifier.predict(x_sift_test)
 
 # #%% Classification - OVR Logistic Regression
 #
 # # HOG + LogReg OVR
 # logreg_hog_classifier = OVRLogRegClassifier()
-# logreg_hog_classifier.fit(x_hog_train, y_train)
+# logreg_hog_classifier.tune_parameters(x_hog_train, y_train)
 # y_hog_logreg_pred = logreg_hog_classifier.predict(x_hog_test)
 #
 # # LBP + LogReg OVR
 # logreg_lbp_classifier = OVRLogRegClassifier()
-# logreg_lbp_classifier.fit(x_lbp_train, y_train)
+# logreg_lbp_classifier.tune_parameters(x_lbp_train, y_train)
 # y_lbp_logreg_pred = logreg_lbp_classifier.predict(x_lbp_test)
 #
 # # ORB + LogReg OVR
 # logreg_orb_classifier = OVRLogRegClassifier()
-# logreg_orb_classifier.fit(x_orb_train, y_train)
+# logreg_orb_classifier.tune_parameters(x_orb_train, y_train)
 # y_orb_logreg_pred = logreg_orb_classifier.predict(x_orb_test)
 #
 # # SIFT + LogReg OVR
 # logreg_sift_classifier = OVRLogRegClassifier()
-# logreg_sift_classifier.fit(x_sift_train, y_train)
+# logreg_sift_classifier.tune_parameters(x_sift_train, y_train)
 # y_sift_logreg_pred = logreg_sift_classifier.predict(x_sift_test)
 
 #%% Metrics 
