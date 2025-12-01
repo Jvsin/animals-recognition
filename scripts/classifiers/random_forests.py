@@ -1,6 +1,6 @@
 #%% Imports
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
 
 #%% Random Forest Classifier
 class RFClassifier:
@@ -25,8 +25,15 @@ class RFClassifier:
                 'min_samples_leaf': [1, 2, 4]
             }
     
-        grid_search = GridSearchCV(self.model, param_grid, cv=cv, scoring='accuracy', n_jobs=-1)
-        grid_search.fit(X_train, y_train)
+            grid_search = RandomizedSearchCV(
+                self.model, 
+                param_grid, 
+                cv=cv, 
+                n_iter=10,
+                scoring='accuracy',
+                n_jobs=-1
+                )
+            grid_search.fit(X_train, y_train)
         
         self.model = grid_search.best_estimator_
         
