@@ -1,6 +1,7 @@
 #%% Imports 
 from sklearn.svm import SVC
 from sklearn.multiclass import OneVsRestClassifier
+from sklearn.model_selection import GridSearchCV
 
 #%% svm class 
 class SVMClassifier:
@@ -13,3 +14,17 @@ class SVMClassifier:
 
     def predict(self, X_test):
         return self.model.predict(X_test)
+    
+    def tune_parameters(self, X_train, y_train, param_grid=None, cv=5):
+        if param_grid is None:
+            param_grid = {
+                'estimator__C': [0.1, 1, 10, 100],
+                'estimator__kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+                'estimator__gamma': ['scale', 'auto', 0.001, 0.01, 0.1, 1]
+            }
+        grid_search = GridSearchCV(self.model, param_grid, cv=cv, scoring='accuracy', n_jobs=-1)
+        grid_search.fit(X_train, y_train)
+        
+        self.model = grid_search.best_estimator_
+        
+        return grid_search.best_params_, grid_search.best_score_
