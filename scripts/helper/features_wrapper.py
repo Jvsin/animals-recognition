@@ -1,15 +1,15 @@
-# scripts/helper/main_pipeline_helper.py
-
+#%% imports
+import os
 from pathlib import Path
 import numpy as np
 
-from scripts.features_helper import (
+from scripts.helper.features_files import (
     features_file_valid as fet_val,
     load_features_from_npz,
 )
 from scripts.pca import perform_pca
 
-
+#%% Train features extraction helpers
 def ensure_train_features_npz(
     transformer,
     name: str,
@@ -20,17 +20,10 @@ def ensure_train_features_npz(
     force_reextract: bool,
     split: str = "train",
 ):
-    """
-    Ensure that train features for a given extractor exist as a .npz file.
-
-    - If `force_reextract` is True or the file is invalid/missing:
-        -> run transformer.process_dataset(...) and save features.
-    - Returns the Path to the .npz file.
-    """
     features_output_dir = Path(features_output_dir)
     features_output_dir.mkdir(parents=True, exist_ok=True)
 
-    npz_path = features_output_dir / npz_filename
+    npz_path = os.path.join(features_output_dir, npz_filename)
 
     if force_reextract or not fet_val(npz_path, train_df):
         print(f"[{name}] Extracting {split} features...")
@@ -58,15 +51,7 @@ def ensure_test_features_npz(
     force_reextract: bool,
     splits=("test", "valid"),
 ):
-    """
-    Ensure that test features (possibly from multiple splits, e.g. test+valid)
-    exist as a single .npz file.
 
-    - If `force_reextract` is True or the file is invalid/missing:
-        -> run transformer.process_dataset(...) for each split,
-           merge dictionaries, save one combined .npz.
-    - Returns the Path to the .npz file.
-    """
     features_output_dir = Path(features_output_dir)
     features_output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -102,13 +87,6 @@ def compute_pca_for_feature(
     train_df,
     test_df,
 ):
-    """
-    Load train/test features from npz, run PCA, and return PCA-transformed matrices.
-
-    Returns
-    -------
-    x_train_pca, x_test_pca
-    """
     print(f"\n=== PCA: {name} ===")
     X_train = load_features_from_npz(train_npz_path, train_df)
     X_test = load_features_from_npz(test_npz_path, test_df)

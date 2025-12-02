@@ -1,7 +1,7 @@
 #%% Imports and constants
 import pandas as pd
 
-from scripts.helper.main_pipeline_helper import (
+from scripts.helper.features_wrapper import (
     ensure_train_features_npz,
     ensure_test_features_npz,
     compute_pca_for_feature,

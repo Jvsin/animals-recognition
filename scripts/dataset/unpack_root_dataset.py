@@ -1,20 +1,22 @@
+#%% Imports
 from __future__ import annotations
-
 import shutil
 import sys
 import zipfile
 import tempfile
 from pathlib import Path
 
+#%% File name
 ZIP_NAME = 'Wild Animal Facing Extinction.zip'
 
-
+#%% Zip finder in root
 def find_inner_zip(root: Path) -> Path | None:
     for p in root.rglob('*.zip'):
         return p
     return None
 
-def main_unpack(argv=None):
+#%% Main unpacking function
+def main_unpack():
     script_dir = Path(__file__).resolve().parent
     project_root = script_dir.parent.parent
     zip_path = project_root / ZIP_NAME
@@ -112,6 +114,6 @@ def main_unpack(argv=None):
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
 
-
+#%% Run main unpack function
 if __name__ == '__main__':
     main_unpack()
