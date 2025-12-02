@@ -21,11 +21,12 @@ from scripts.classifiers.random_forests import RandomForestClassifier
 
 from scripts.classifiers.metrics import calculate_metrics, plot_confusion_matrix
 
-FORCE_REEXTRACT = False
+#%% Force re-extraction of dataset and features
+FORCE_REEXTRACT = True
 
 #%% Extract dataset paths and labels from a given directory
-main_unpack()
-create_splits()
+main_unpack(force_extract=FORCE_REEXTRACT)
+create_splits(force_extract=FORCE_REEXTRACT)
 
 #%% Resize and pad images to a fixed size
 rescale_all_images()

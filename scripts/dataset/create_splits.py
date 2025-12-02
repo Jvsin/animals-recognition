@@ -79,8 +79,10 @@ def split_and_write_csvs(comb_root, out_root, classes, train_r):
         for f in csv_files.values():
             f.close()
 
-def create_splits():
-    # todo: make dataset splits balanced
+def create_splits(force_extract=False):
+    if not force_extract and (Path(dataset_root) / 'train.csv').exists() and (Path(dataset_root) / 'test.csv').exists():
+        print("CSV splits already exist. Skipping creation.")
+        return
     
     create_csv_files(dataset_root)
     

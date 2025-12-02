@@ -16,10 +16,15 @@ def find_inner_zip(root: Path) -> Path | None:
     return None
 
 #%% Main unpacking function
-def main_unpack():
+def main_unpack(force_extract = False):
     script_dir = Path(__file__).resolve().parent
     project_root = script_dir.parent.parent
     zip_path = project_root / ZIP_NAME
+    dataset_dir = project_root / 'dataset'
+    
+    if not force_extract and all((dataset_dir / folder).exists() and any((dataset_dir / folder).iterdir()) for folder in ['train', 'test', 'valid']):
+        print("Dataset already exists and is not empty. Skipping unpacking.")
+        return
 
     if not zip_path.exists():
         print(f'File not found: {zip_path}')
