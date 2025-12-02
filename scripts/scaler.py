@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from pathlib import Path
 
 #%% Set size of image 
 NEW_IMAGE_SIZE = (256, 256)
@@ -45,7 +46,12 @@ def rescale_image(image):
     return rescaled_image
 
 #%% rescale all images in a given directory and save to output directory
-def rescale_all_images():
+def rescale_all_images(force_extract=False):
+    output_dir = Path(OUTPUT_DIR)
+    if not force_extract and all((output_dir / folder).exists() and any((output_dir / folder).iterdir()) for folder in ['train', 'test', 'valid']):
+        print("Rescaled dataset already exists and is not empty. Skipping unpacking.")
+        return
+
     print("Rescaling all images...")
     for name in ['train', 'test']:
         print(f"Processing {name} set...")
