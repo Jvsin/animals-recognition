@@ -1,3 +1,5 @@
+#TODO: ... WKLEIĆ KOD Z BOTA TO KAŻDY POTRAFI 
+
 """
 HOG (Histogram of Oriented Gradients) Feature Extraction Script
 This script processes images from the dataset and extracts HOG features.

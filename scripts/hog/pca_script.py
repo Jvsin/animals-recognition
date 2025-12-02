@@ -1,3 +1,5 @@
+#TODO: ... WKLEIĆ KOD Z BOTA TO KAŻDY POTRAFI 
+
 """
 PCA Script for HOG Features
 Loads HOG features and applies PCA dimensionality reduction.

@@ -1,3 +1,4 @@
+
 """
 PCA Script for LBP Features
 Loads LBP features and applies PCA dimensionality reduction.

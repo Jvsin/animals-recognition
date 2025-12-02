@@ -1,3 +1,5 @@
+#TODO: ... WKLEIĆ KOD Z BOTA TO KAŻDY POTRAFI 
+
 """
 LBP (Local Binary Patterns) Feature Extraction Script
 Extracts LBP histograms from images in the dataset.

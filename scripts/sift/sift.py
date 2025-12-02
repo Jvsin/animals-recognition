@@ -1,3 +1,5 @@
+#TODO: ... WKLEIĆ KOD Z BOTA TO KAŻDY POTRAFI 
+
 """
 SIFT Feature Extraction Script
 This script processes images from the dataset and extracts SIFT features.
