@@ -1,4 +1,3 @@
-#TODO: ... WKLEIĆ KOD Z BOTA TO KAŻDY POTRAFI 
 
 """
 PCA Script for HOG Features

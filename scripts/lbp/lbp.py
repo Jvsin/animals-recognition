@@ -1,4 +1,3 @@
-#TODO: ... WKLEIĆ KOD Z BOTA TO KAŻDY POTRAFI 
 
 """
 LBP (Local Binary Patterns) Feature Extraction Script
