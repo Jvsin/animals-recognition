@@ -2,13 +2,14 @@ import numpy as np
 import cv2
 from sklearn.cluster import MiniBatchKMeans
 
-
+# def stworz_sift():
+#     try:
+#         sift = cv2.SIFT_create()
+#     except AttributeError:
+#         sift = cv2.xfeatures2d.SIFT_create()
+#     return sift
 def stworz_sift():
-    try:
-        sift = cv2.SIFT_create()
-    except AttributeError:
-        sift = cv2.xfeatures2d.SIFT_create()
-    return sift
+    return cv2.SIFT_create()
 
 #wyciagam deskryptory sift z jednego obrazu i zwracam tablice (N,128), jak brak punktow to (0,128)
 def wyciagnij_sift_z_obrazu(image, sift, max_kp=200):
@@ -17,7 +18,7 @@ def wyciagnij_sift_z_obrazu(image, sift, max_kp=200):
     else:
         img_uint8 = image
 
-    #RGB na gray
+    #RGB na szarość
     if img_uint8.ndim == 3:
         gray = cv2.cvtColor(img_uint8, cv2.COLOR_RGB2GRAY)
     else:
@@ -37,14 +38,14 @@ def wyciagnij_sift_z_obrazu(image, sift, max_kp=200):
 
 def zbuduj_slownik_sift_bovw(obrazy_train,n_clusters=256,max_images=1000,max_kp_per_image=200,random_state=42):
     """
-    Buduje słownik (codebook) BoVW:
+    Buduje słownik BoVW:
     - bierze max_images obrazów z train,
     - z każdego wyciąga max_kp_per_image deskryptorów,
     - skleja wszystko i robi MiniBatchKMeans(n_clusters).
 
     Zwraca:
-    - sift: obiekt SIFT
-    - kmeans: wytrenowany MiniBatchKMeans
+    - obiekt SIFT
+    - wytrenowany MiniBatchKMeans
     """
     sift = stworz_sift()
     rng = np.random.RandomState(random_state)
@@ -66,21 +67,20 @@ def zbuduj_slownik_sift_bovw(obrazy_train,n_clusters=256,max_images=1000,max_kp_
         raise ValueError("Nie udało się wyciągnąć żadnych deskryptorów SIFT.")
 
     wszystkie_desc = np.vstack(wszystkie_desc)
-    print("Łączna liczba deskryptorów do KMeans:", wszystkie_desc.shape[0])
-    print("trening MiniBatchKMeans (słownik BoVW)...")
-    kmeans = MiniBatchKMeans(n_clusters=n_clusters,random_state=random_state,batch_size=1000,verbose=1,)
+    print("Łączna liczba deskryptorów do KMeans -->", wszystkie_desc.shape[0])
+    print("trening MiniBatchKMeans (słownik BoVW) -->")
+    kmeans = MiniBatchKMeans(n_clusters=n_clusters,random_state=random_state,batch_size=1000,verbose=1)
     kmeans.fit(wszystkie_desc)
-
     return sift, kmeans
 
 
 def policz_bovw_dla_obrazow(obrazy, sift, kmeans, max_kp_per_image=200):
     """
-    Zamienia listę obrazów na macierz BoVW:
+    Zamieniam listę obrazów na macierz BoVW:
     - każdy obraz --> SIFT
     - SIFT --> przypisanie do najbliższego centroidu (słowo wizualne)
     - słowa --> histogram (z-normalizowany do sumy 1)
-    Zwraca: X o kształcie (n_obrazów, n_clusters)
+    Zwraca --> X o kształcie (n_obrazów, n_clusters)
     """
     n = len(obrazy)
     k = kmeans.n_clusters

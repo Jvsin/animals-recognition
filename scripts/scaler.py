@@ -1,4 +1,3 @@
-#%% Imports 
 from skimage.transform import resize
 import numpy as np
 import pandas as pd
@@ -6,14 +5,11 @@ import matplotlib.pyplot as plt
 import os
 from pathlib import Path
 
-#%% Set size of image 
 NEW_IMAGE_SIZE = (256, 256)
-
-#%% Set Directories
 INPUT_DIR = 'dataset/'
 OUTPUT_DIR = 'output/images/'
 
-#%% Function to paint image to square by adding padding
+#Funkcja do dopasowania obrazu poprzez dodanie marginesów (paddingu).
 def pad_to_square(image, old_shape, new_shape):
     diff_y = new_shape[0] - old_shape[0] 
     diff_x = new_shape[1] - old_shape[1]
@@ -30,8 +26,7 @@ def pad_to_square(image, old_shape, new_shape):
    
     return padded
     
-
-#%% Function to rescale image to NEW_IMAGE_SIZE
+#Funkcja do przeskalowania obrazu do rozmiaru NEW_IMAGE_SIZE.
 def rescale_image(image):
     shapes = list(image.shape)  
     new_shape = list(image.shape)
@@ -45,14 +40,14 @@ def rescale_image(image):
 
     return rescaled_image
 
-#%% rescale all images in a given directory and save to output directory
+#Przeskaluj wszystkie obrazy w podanym katalogu i zapisz je w katalogu wyjściowym.
 def rescale_all_images(force_extract=False):
     output_dir = Path(OUTPUT_DIR)
     if not force_extract and all((output_dir / folder).exists() and any((output_dir / folder).iterdir()) for folder in ['train', 'test', 'valid']):
-        print("Rescaled dataset already exists and is not empty. Skipping unpacking.")
+        print("Przeskalowany dataset już istnieje i nie jest pusty. Pomijam rozpakowywanie.")
         return
 
-    print("Rescaling all images...")
+    print("skalowanie wszystkich obrazów...")
     for name in ['train', 'test']:
         print(f"Processing {name} set...")
         data = pd.read_csv(f'{INPUT_DIR}/{name}.csv')
@@ -64,4 +59,4 @@ def rescale_all_images(force_extract=False):
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             plt.imsave(output_path, rescaled_image)
     
-    print("Rescaling completed.")
+    print("Przeskalowywanie zakończone")

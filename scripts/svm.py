@@ -1,9 +1,7 @@
-#%% Imports 
 from sklearn.svm import SVC
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.model_selection import RandomizedSearchCV
-
-#%% svm class 
+ 
 class SVMClassifier:
     def __init__(self, C=1.0, kernel='rbf', gamma='scale'):
         base_model = SVC(C=C, kernel=kernel, gamma=gamma)
@@ -15,6 +13,7 @@ class SVMClassifier:
     def predict(self, X_test):
         return self.model.predict(X_test)
     
+    #mozna chyba wyrzucic pozniej ==== 
     def tune_parameters(self, X_train, y_train, param_grid=None, cv=5):
         if param_grid is None:
             param_grid = {
@@ -22,14 +21,7 @@ class SVMClassifier:
                 'estimator__kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
                 'estimator__gamma': ['scale', 'auto', 0.001, 0.01, 0.1, 1]
             }
-        grid_search = RandomizedSearchCV(
-            self.model, 
-            param_grid, 
-            cv=cv, 
-            n_iter=10,
-            scoring='accuracy',
-            n_jobs=-1
-            )
+        grid_search = RandomizedSearchCV(self.model, param_grid, cv=cv, n_iter=10,scoring='accuracy',n_jobs=-1)
         grid_search.fit(X_train, y_train)
         
         self.model = grid_search.best_estimator_

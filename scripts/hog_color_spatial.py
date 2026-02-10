@@ -2,9 +2,7 @@ import numpy as np
 from skimage.feature import hog
 from skimage.color import rgb2hsv
 
-
 def policz_hog_kolor_spatial_dla_obrazka(obraz_rgb,orientations=9,pixels_per_cell=(16, 16),cells_per_block=(2, 2),bins_hist=16):
-
     #normalizacja do [0, 1]
     if obraz_rgb.dtype != np.float32 and obraz_rgb.dtype != np.float64:
         obraz = obraz_rgb.astype("float32") / 255.0
@@ -13,7 +11,7 @@ def policz_hog_kolor_spatial_dla_obrazka(obraz_rgb,orientations=9,pixels_per_cel
 
     wys, szer, _ = obraz.shape
 
-    #HOG dla każdego kanału RGB osobno (jak w v2)
+    #HOG dla każdego kanału RGB osobno
     hog_cechy = []
     for c in range(3):
         kanal = obraz[..., c]
@@ -46,12 +44,11 @@ def policz_hog_kolor_spatial_dla_obrazka(obraz_rgb,orientations=9,pixels_per_cel
         for c in range(3):
             hist, _ = np.histogram(blok[..., c],bins=bins_hist,range=(0.0, 1.0),density=True)
             hist_spatial.append(hist)
-    hist_spatial = np.concatenate(hist_spatial, axis=0)  # 4 bloki * 3 kanały * bins_hist
+    hist_spatial = np.concatenate(hist_spatial, axis=0)  #4 bloki * 3 kanały * bins_hist
 
-    #HOG + hist globalny + hist przestrzenny
+    #HOG + histpgram globalny + histogram przestrzenny
     cechy_laczne = np.concatenate([hog_rgb, hist_global, hist_spatial], axis=0)
     return cechy_laczne
-
 
 def policz_hog_kolor_spatial_batch(lista_obrazow,orientations=9,pixels_per_cell=(16, 16),cells_per_block=(2, 2),bins_hist=16):
     wszystkie_cechy = []
